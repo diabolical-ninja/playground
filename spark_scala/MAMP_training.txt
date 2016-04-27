@@ -1,0 +1,60 @@
+
+14%, 3-8wks
+
+
+Users can run simulations in the Diagnose module. 
+False
+
+
+Which of the following lists orders the four-step marketing optimization analytics process correctly?
+base, model,optimize,  action (C)
+
+
+Which of the following are benefits of extracting data from AMAP to a pivot table?
+B&C
+
+
+Why is it important to consider the amount and quality of data that will be imported into AMAP for analysis?
+Quantity of data
+
+
+On which dashboard will users see the report pictured below?
+Diagnose
+
+
+Which of the following statements about AMAP are true?
+A,B,C
+
+
+Review the Summary dashboard sliced by marketing activity below. Which answer choice accurately describes the information you see?
+All the Above
+
+
+Which of the following statements most accurately describes the factors driving the need for marketing analytics optimization?
+Executives must guess
+
+
+In the Details dashboard pictured below, the report is sliced by activity. Which answer choices accurately describes the information you see?
+A & C
+
+
+Review the KPI strip pictured below. Then, choose the answer choice that best describes the information in the KPI strip.
+A & C
+
+In the Reallocation dashboard pictured below, the optimized scenario is sliced by marketing division. Which answer choice is correct?
+Greatest relative increase in spend was recorded in the healthcase division
+
+
+Which of the following actions are recorded in the History Panel?
+B,C,D
+
+
+In the Decomposition dashboard shown below, the optimized and base scenarios are sliced by the marketing activity. TV is further sliced by the marketing campaign. 
+Spend is decreased on pre-school in the optimized scenario
+
+
+
+
+
+
+

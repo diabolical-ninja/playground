@@ -1,0 +1,49 @@
+bin\spark-shell --packages spark-csv
+
+
+// Load required Libraries
+import org.apache.spark.ml.regression.LinearRegression
+import org.apache.spark.mllib.regression.LabeledPoint
+
+
+// Load Quakes Data
+val quakes = sqlContext.read.format("com.databricks.spark.csv").option("header","true").load("C:/Users/yassin.eltahir/quakes.csv")
+
+
+
+val data = sc.textFile("C:/Users/yassin.eltahir/quakes.csv").map(line => line.split(",")).filter(line => line.length>1)
+
+
+
+// Convert to Labelled Point (RDD)
+val test = quakes.map(row => LabeledPoint(row.getDouble(0), row.getAs[Vector](4)))
+
+val labeled = tfidf.map(row => LabeledPoint(row.getDouble(0), row(4).asInstanceOf[Vector]))
+val labeled = quakes.map(row => LabeledPoint(row.getDouble(0), row.getAs[Vector](4)))
+
+
+
+
+
+
+// register the DataFrame as a temp table 
+auction.registerTempTable("auction")
+
+quakes.registerTempTable("quakes")
+
+
+
+// Convert datatypes
+val results = sqlContext.sql("SELECT cast(lat as float), cast(long as float), cast(depth as float), cast(mag as float), stations FROM quakes")
+
+
+
+// Setup linear model
+val lr = new LinearRegression()
+  .setMaxIter(10)
+  .setRegParam(0.3)
+  .setElasticNetParam(0.8)
+
+
+// Fit Model
+val lrModel = lr.fit(results)
