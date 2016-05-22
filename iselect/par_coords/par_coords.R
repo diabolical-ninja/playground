@@ -10,15 +10,9 @@
 # Author:  2016-05-22  Yassin Eltahir
 #
 # Steps:  1 - Load Packages & Functions
-#         2 - Setup Global Variables & Connections
-#         3 - Source Data
-#         4 - Model Each Variable
-#         5 - Feature Select
-#         6 - Variable Importance
-#         7 - Score Results of Feature Selection
-#         8 - Train Final Model
-#         9 - Final Results
-#        10 - Output Results Tables
+#         2 - Source & Clean Data
+#         3 - Build Plot
+#         4 - Save as HTML
 #
 #**************************************************************************#
 
@@ -91,5 +85,4 @@ p1
 # 4 - Save as HTML  ####
 
 p1$save("/Users/yassineltahir/Repos/playground/iselect/par_coords/par_coords.html")
-write.table(dt,"/Users/yassineltahir/Repos/playground/iselect/par_coords/dt.csv", 
-            quote = F, row.names = F)
+write.table(dt,"/Users/yassineltahir/Repos/playground/iselect/par_coords/dt.csv", quote = F, row.names = F)
