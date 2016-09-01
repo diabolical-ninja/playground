@@ -99,6 +99,13 @@ json_req = '{"marketIds":[' + for_insert + '],"priceProjection":{"priceData":["E
 market_book = bfGet(api_req, json_req, app_key, session_token)
 
 
-
-
-
+"""
+TO-DO:
+    - For market odds returned:
+        - Identify best odds for each player (both Back & Lay)
+        - Pass odds through arbitrage function
+    - Sense check odds returned with those manually found through the website
+    - Figure out what all the information returned means!!
+    - If an arbitrage opportunity is identified & odds match website, place a bet??
+    
+"""
