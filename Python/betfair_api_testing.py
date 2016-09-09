@@ -95,8 +95,18 @@ for_insert = '"' + '","'.join(market_ids) + '"'
 # Get Market Prices (using marketID from previous call)
 api_req = 'listMarketBook'
 # json_req = '{"marketIds" : ["1.126548939"], "priceProjection" : ["EX_ALL_OFFERS"]}'
-json_req = '{"marketIds":[' + for_insert + '],"priceProjection":{"priceData":["EX_BEST_OFFERS"]}}}'
-market_book = bfGet(api_req, json_req, app_key, session_token)
+json_req = '''{"marketIds":[''' + for_insert + '''],
+                "priceProjection":{"priceData":["EX_BEST_OFFERS"]},
+                "orderProjection":"EXECUTABLE"}
+            '''
+market_book = bfGet(api_req, json_req, app_key, session_token, display=True)
+
+
+# Format Market Odds for Analysis
+
+#1st - contestent odds
+[ for x in market_book]
+
 
 
 """
