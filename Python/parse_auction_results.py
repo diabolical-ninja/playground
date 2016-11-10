@@ -1,71 +1,80 @@
 import os
-import pyPdf
+from functools import partial
+import pandas as pd
+from PyPDF2 import PdfFileReader
 from tabula import read_pdf_table
 
 
-pdf_dir = '/Users/yassineltahir/Google Drive/Data Science/Real Estate Analysis'
+
+
+#pdf_dir = '/Users/yassineltahir/Google Drive/Data Science/Real Estate Analysis'
+pdf_dir = 'C:/Users/Yassin/Google Drive/Data Science/Real Estate Analysis'
 historical_results = os.listdir(pdf_dir)
-test_file = '{0}/{1}'.format(pdf_dir, historical_results[1])
+all_files = ['{0}/{1}'.format(pdf_dir, x) for x in historical_results]
+#test_file = '{0}/{1}'.format(pdf_dir, historical_results[0])
 
 
 
-# Due to different formatting between page 1 & 2-n they need to be treated differently
-# Additionally when excluding pages from tabula it needs the exact page numbers.
-# To do that we first need to know the number of pages present
 
-reader = pyPdf.PdfFileReader(open(test_file))
-num_pages = reader.getNumPages() 
+a.append(a.columns.tolist(), ignore_index=True)
+
+
+df = pd.DataFrame([a.columns.tolist()], columns = a.columns.tolist())
+
+
 
 # parse 1st page
-a = read_pdf_table(test_file, pages = 1, guess=True)
-a.shape
 
-
-left = 11.18
-top = 197.14
-width = 569.39
-height = 573.22
-
+# Define coordinates for the 1st page
 y1 = 225 # 197
 x1 = 11
 y2 = 770
 x2 = 580
-
 coords = [y1, x1, y2, x2]
-# top,left,bottom,right)
-
-a = read_pdf_table(test_file, pages = 1, area=coords)
-a.shape
-a.head(5)
 
 
+def pdf_parse(pdf,coordinates):
+    
+    try:
+        
+        # Due to different formatting between page 1 & 2-n they need to be treated differently
+        # Additionally when excluding pages from tabula it needs the exact page numbers.
+        # To do that we first need to know the number of pages present
+        reader = PdfFileReader(open(pdf,'rb'))
+        num_pages = reader.getNumPages() 
+        
+        # Extract from pages 2-(N-1)
+        pages = range(2,num_pages+1)
+        p2n = read_pdf_table(pdf, pages = pages)
+        
+        # TO-DO: Add check incase documents format changes
+        # Find coordinates where number of columns = 6
+        p1 = read_pdf_table(pdf, pages = 1, area=coordinates)
+        
+        # Currently ignoring the 1st row & reading the 2nd row as the header
+        tmp = pd.DataFrame([p1.columns.tolist()], columns = p1.columns.tolist())
+        p1 = p1.append(tmp)
+        
+        # Update columns names to match p2n to enable a clean join
+        p1.columns = p2n.columns
+           
+        print 'Parsed {0}'.format(pdf)
+        # Join all pages
+        return p1.append(p2n).reset_index()
+    
+    except:
+        print 'Failed {0}'.format(pdf)
+        pass
+        
+    
+    
+#out = pdf_parse(test_file, coords)    
 
 
-y1 = top
-x1 = 11 # left
-y2 = top + height
-x2 = left + width
 
+# parse all files
+func = partial(pdf_parse, coordinates = coords)
+out_all = map(func, all_files)
 
-b = a[3:a.shape[0]]
-
-
-
-df = pd.DataFrame(df.row.str.split(' ',1).tolist(),
-                                   columns = ['flips','row'])
-
-
-
-
-
-# Extract from pages 2-N
-pages = range(2,num_pages)
-df = read_pdf_table(test_file, pages = pages)
-
-
-
-
-
-
-
-
+# Join all dataframes
+df = pd.concat(out_all)
