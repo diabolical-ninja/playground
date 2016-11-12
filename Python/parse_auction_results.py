@@ -8,7 +8,6 @@
 
 
 import os
-from functools import partial
 import pandas as pd
 from PyPDF2 import PdfFileReader
 from tabula import read_pdf_table
@@ -18,29 +17,46 @@ from tabula import read_pdf_table
 
 #pdf_dir = '/Users/yassineltahir/Google Drive/Data Science/Real Estate Analysis'
 pdf_dir = 'C:/Users/Yassin/Google Drive/Data Science/Real Estate Analysis'
-historical_results = os.listdir(pdf_dir)
-all_files = ['{0}/{1}'.format(pdf_dir, x) for x in historical_results[0:2]]
-test_file = '{0}/{1}'.format(pdf_dir, historical_results[0])
-
+all_files = ['{0}/{1}'.format(pdf_dir, x) for x in os.listdir(pdf_dir)]
+test_file = all_files[12]
 out_dir = 'C:/Users/Yassin'
 
 
-#a.append(a.columns.tolist(), ignore_index=True)
-#
-#
-#df = pd.DataFrame([a.columns.tolist()], columns = a.columns.tolist())
-
-
-
-# parse 1st page
-
-# Define coordinates for the 1st page
-y1 = 225 # 197
+# Coordinates for first page table
+y1 = 224.4
 x1 = 11
 y2 = 770
 x2 = 580
-coords = [y1, x1, y2, x2]
+coords = [y1, x1, y2, x2] 
 
+
+
+def main(pdf):
+
+    try:
+        # Determine City & Auction Date
+        city, date = city_date(pdf)
+    
+        # Process pages 2-N
+        p2n = process_p2n(pdf)
+    
+        # Process page 1
+        p1 = process_p1(pdf, coords, p2n.columns)
+        
+        # Combine P1 & P2N and add city & date info
+        out = p1.append(p2n).reset_index()
+        out['city'] = city
+        out['date'] = date
+    
+        print "Processed {}".format(pdf)
+        
+        return out
+        
+    except:
+        print "Failed {}".format(pdf)
+        pass
+    
+    
 
 # Determine city & auction date
 def city_date(filename):
@@ -53,67 +69,66 @@ def city_date(filename):
     return name_parts[1], name_parts[0]
 
 
-
-
-
-
-
-def pdf_parse(pdf,coordinates):
+# Process Pages 2 - N
+def process_p2n(pdf):
     
-    try:
-        
-        # Due to different formatting between page 1 & 2-n they need to be treated differently
-        # Additionally when excluding pages from tabula it needs the exact page numbers.
-        # To do that we first need to know the number of pages present
-        with open(pdf,'rb') as f:
-            reader = PdfFileReader(f,'rb')
-            num_pages = reader.getNumPages() 
-        
-        # Extract from pages 2-(N-1)
-        pages = range(2,num_pages+1)
-        p2n = read_pdf_table(pdf, pages = pages)
-        
-        # TO-DO: Add check incase documents format changes
-        # Find coordinates where number of columns = 6
-        p1 = read_pdf_table(pdf, pages = 1, area=coordinates)
-        
-        # Currently ignoring the 1st row & reading the 2nd row as the header
-        tmp = pd.DataFrame([p1.columns.tolist()], columns = p1.columns.tolist())
-        p1 = p1.append(tmp)
-        
-        # Update columns names to match p2n to enable a clean join
-        p1.columns = p2n.columns
-        
-        # Add location & Auction date
-        location, date = city_date(pdf)
-        
-        out = p1.append(p2n).reset_index()
-        out['city'] = location
-        out['date'] = date
-           
-        print 'Parsed {0}'.format(pdf)
-        # Join all pages
-        return out
-    
-    except:
-        print 'Failed {0}'.format(pdf)
-        pass
-        
+    # Determine number of pages
+    with open(pdf,'rb') as f:
+        reader = PdfFileReader(f,'rb')
+        num_pages = reader.getNumPages() 
+       
+    # Extract from pages 2-(N-1)
+    return read_pdf_table(pdf, pages = range(2,num_pages+1))
+
     
     
-out = pdf_parse(test_file, coords)    
+# Process Page 1, checking that no more than the 1st row is missed
+def process_p1(pdf, coordinates, columns):
+
+    p1 = read_pdf_table(pdf, pages = 1, area = coordinates)
+    ncol = p1.shape[1]
+
+    # Check that y1 is not too high
+    # If it is then move down 1 point
+    while ncol != 6:
+
+        coordinates[0] = coordinates[0] + 1
+        p1 = read_pdf_table(pdf, pages = 1, area = coordinates)
+        ncol = p1.shape[1]
 
 
+    # Check that y1 is not too low
+    # If it is then move up in small steps
+    while ncol == 6:
+        
+        coordinates[0] = coordinates[0] - 0.1
+        p1 = read_pdf_table(pdf, pages = 1, area = coordinates)
+        ncol = p1.shape[1]
+
+        # Indicates we've gone past the top of the table
+        if ncol != 6:
+            coordinates[0] = coordinates[0] + 0.1
+            p1 = read_pdf_table(pdf, pages = 1, area = coordinates)
+        
+        
+    # TO-DO: read first row of table. Currently skipping
+    # The 2nd row is incorrectly read as the header. Make it a row
+    tmp = pd.DataFrame([p1.columns.tolist()], columns = p1.columns.tolist())
+    p1 = p1.append(tmp)
+    p1.columns = columns
+    
+    return p1
+ 
 
 
-# parse all files
-func = partial(pdf_parse, coordinates = coords)
-out_all = map(func, all_files)
+if __name__ == "__main__":
+    out_all = map(main, all_files)
 
-# Join all dataframes
+    
+# Create single DF out of all files    
 df = pd.concat(out_all)
 
 # Write output
-df.to_csv("{}/test.csv".format(out_dir), sep='|',
+df.to_csv("{}/historical_auction_results.csv".format(out_dir), sep='|',
           index=False, 
           header = True)
