@@ -126,6 +126,7 @@ if __name__ == "__main__":
 
     
 # Create single DF out of all files    
+out_all = [x for x in out_all if isinstance(x,pd.DataFrame)]
 df = pd.concat(out_all)
 
 # Write output
