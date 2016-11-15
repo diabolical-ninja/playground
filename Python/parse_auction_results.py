@@ -30,6 +30,7 @@ x2 = 580
 coords = [y1, x1, y2, x2] 
 
 
+failed = []
 
 def main(pdf):
 
