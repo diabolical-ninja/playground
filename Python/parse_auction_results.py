@@ -163,3 +163,4 @@ df = pd.concat(out_all)
 df.to_csv("{}/historical_auction_results.csv".format(out_dir), sep='|',
           index=False, 
           header = True)
+
