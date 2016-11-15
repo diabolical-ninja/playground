@@ -40,9 +40,15 @@ def main(pdf):
     
         # Process pages 2-N
         p2n = process_p2n(pdf)
-    
+        
+        # Extract Columns to assign to Page 1
+        if p2n is None:
+            p2_columns = None
+        else:
+            p2_columns = p2n.columns
+        
         # Process page 1
-        p1 = process_p1(pdf, coords, p2n.columns)
+        p1 = process_p1(pdf, coords, p2_columns)
         
         # Combine P1 & P2N and add city & date info
         out = p1.append(p2n).reset_index()
@@ -77,17 +83,23 @@ def process_p2n(pdf):
     with open(pdf,'rb') as f:
         reader = PdfFileReader(f,'rb')
         num_pages = reader.getNumPages() 
-       
-    # Extract from pages 2-(N-1)
-    return read_pdf_table(pdf, pages = range(2,num_pages+1))
+    
+    if num_pages != 1:    
+        # Extract from pages 2-(N-1)
+        return read_pdf_table(pdf, pages = range(2,num_pages+1))
 
     
     
 # Process Page 1, checking that no more than the 1st row is missed
-def process_p1(pdf, coordinates, columns):
+def process_p1(pdf, coordinates, columns=None):
 
     p1 = read_pdf_table(pdf, pages = 1, area = coordinates)
-    ncol = p1.shape[1]
+    
+    if p1 is None:
+        ncol = 0
+    else:
+        ncol = p1.shape[1]
+
 
     # Check that y1 is not too high
     # If it is then move down 1 point
@@ -95,7 +107,10 @@ def process_p1(pdf, coordinates, columns):
 
         coordinates[0] = coordinates[0] + 1
         p1 = read_pdf_table(pdf, pages = 1, area = coordinates)
-        ncol = p1.shape[1]
+        try:
+            ncol = p1.shape[1]
+        except:
+            ncol = 0
 
 
     # Check that y1 is not too low
@@ -104,7 +119,10 @@ def process_p1(pdf, coordinates, columns):
         
         coordinates[0] = coordinates[0] - 0.1
         p1 = read_pdf_table(pdf, pages = 1, area = coordinates)
-        ncol = p1.shape[1]
+        try:
+            ncol = p1.shape[1]
+        except:
+            ncol = 0
 
         # Indicates we've gone past the top of the table
         if ncol != 6:
@@ -116,15 +134,26 @@ def process_p1(pdf, coordinates, columns):
     # The 2nd row is incorrectly read as the header. Make it a row
     tmp = pd.DataFrame([p1.columns.tolist()], columns = p1.columns.tolist())
     p1 = p1.append(tmp)
-    p1.columns = columns
+    
+    # If Column headers aren't provided assume their values
+    if columns is None:
+        p1.columns = ['Suburb','Address','Type','Price','Result','Agent']
+    else:
+        p1.columns = columns
     
     return p1
  
 
+    
+
 
 if __name__ == "__main__":
-    out_all = map(main, all_files)
+   out_all = map(main, all_files)
 
+   
+   
+
+   
     
 # Create single DF out of all files    
 out_all = [x for x in out_all if isinstance(x,pd.DataFrame)]
