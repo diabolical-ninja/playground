@@ -18,8 +18,9 @@ from tabula import read_pdf_table
 #pdf_dir = '/Users/yassineltahir/Google Drive/Data Science/Real Estate Analysis'
 pdf_dir = 'C:/Users/Yassin/Google Drive/Data Science/Real Estate Analysis'
 all_files = ['{0}/{1}'.format(pdf_dir, x) for x in os.listdir(pdf_dir)]
-test_file = all_files[12]
-out_dir = 'C:/Users/Yassin'
+#test_file = all_files[12]
+
+out_dir = 'C:/Users/Yassin/Google Drive/Data Science/Real Estate Analysis/processing_output'
 
 
 # Coordinates for first page table
@@ -30,7 +31,9 @@ x2 = 580
 coords = [y1, x1, y2, x2] 
 
 
+# Variable (list) to capture failed files
 failed = []
+
 
 def main(pdf):
 
@@ -61,6 +64,7 @@ def main(pdf):
         
     except:
         print "Failed {}".format(pdf)
+        failed.append(pdf)
         pass
     
     
@@ -163,4 +167,11 @@ df = pd.concat(out_all)
 df.to_csv("{}/historical_auction_results.csv".format(out_dir), sep='|',
           index=False, 
           header = True)
+
+
+# Write Fails to Disk
+out_fails = open("{}/failed.txt".format(out_dir), 'w')
+for item in failed:
+    out_fails.write(item+'\n')
+out_fails.close()    
 
