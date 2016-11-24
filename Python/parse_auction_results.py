@@ -18,7 +18,7 @@ from tabula import read_pdf_table
 #pdf_dir = '/Users/yassineltahir/Google Drive/Data Science/Real Estate Analysis'
 pdf_dir = 'C:/Users/Yassin/Google Drive/Data Science/Real Estate Analysis'
 all_files = ['{0}/{1}'.format(pdf_dir, x) for x in os.listdir(pdf_dir)]
-#test_file = all_files[12]
+#test_file = 'C:/Users/Yassin/Google Drive/Data Science/Real Estate Analysis/20160213_melbourne_auction_results.pdf'
 
 out_dir = 'C:/Users/Yassin/Google Drive/Data Science/Real Estate Analysis/processing_output'
 
@@ -28,7 +28,17 @@ y1 = 224.4
 x1 = 11
 y2 = 770
 x2 = 580
-coords = [y1, x1, y2, x2] 
+p1_coords = [y1, x1, y2, x2] 
+
+
+# Coordinates for pages 2-n
+y21 = 0
+x21 = 11
+y22 = 780
+x22 = 580
+
+p2n_coords = [y21, x21, y22, x22]
+
 
 
 # Variable (list) to capture failed files
@@ -42,8 +52,8 @@ def main(pdf):
         city, date = city_date(pdf)
     
         # Process pages 2-N
-        p2n = process_p2n(pdf)
-        
+        p2n = process_p2n(pdf, p2n_coords)
+                
         # Extract Columns to assign to Page 1
         if p2n is None:
             p2_columns = None
@@ -51,7 +61,7 @@ def main(pdf):
             p2_columns = p2n.columns
         
         # Process page 1
-        p1 = process_p1(pdf, coords, p2_columns)
+        p1 = process_p1(pdf, p1_coords, p2_columns)
         
         # Combine P1 & P2N and add city & date info
         out = p1.append(p2n).reset_index()
@@ -81,7 +91,7 @@ def city_date(filename):
 
 
 # Process Pages 2 - N
-def process_p2n(pdf):
+def process_p2n(pdf, coordinates):
     
     # Determine number of pages
     with open(pdf,'rb') as f:
@@ -90,7 +100,8 @@ def process_p2n(pdf):
     
     if num_pages != 1:    
         # Extract from pages 2-(N-1)
-        return read_pdf_table(pdf, pages = range(2,num_pages+1))
+        hold = read_pdf_table(pdf, pages = range(2,num_pages+1), area = coordinates)
+        return  hold[hold.ix[:,0]!='Suburb']
 
     
     
