@@ -1,0 +1,9 @@
+C:\Users\Yassin\Documents\fuckthisshit\fuckthisshit\fuckthisshit\bin\Debug\fuckthisshit.exe.config
+C:\Users\Yassin\Documents\fuckthisshit\fuckthisshit\fuckthisshit\bin\Debug\fuckthisshit.XML
+C:\Users\Yassin\Documents\fuckthisshit\fuckthisshit\fuckthisshit\bin\Debug\fuckthisshit.exe
+C:\Users\Yassin\Documents\fuckthisshit\fuckthisshit\fuckthisshit\bin\Debug\fuckthisshit.pdb
+C:\Users\Yassin\Documents\fuckthisshit\fuckthisshit\fuckthisshit\bin\Debug\FSharp.Core.dll
+C:\Users\Yassin\Documents\fuckthisshit\fuckthisshit\fuckthisshit\bin\Debug\FSharp.Core.xml
+C:\Users\Yassin\Documents\fuckthisshit\fuckthisshit\fuckthisshit\obj\Debug\fuckthisshit.exe
+C:\Users\Yassin\Documents\fuckthisshit\fuckthisshit\fuckthisshit\obj\Debug\fuckthisshit.pdb
+C:\Users\Yassin\Documents\fuckthisshit\fuckthisshit\fuckthisshit\obj\Debug\fuckthisshit.fsproj.fuckthisshit.exe.config
