@@ -1,7 +1,9 @@
 ﻿#I "../packages/RProvider.1.1.20"
 #load "RProvider.fsx"
+#r @"../packages//FSharp.Data.2.3.2/lib/net40/FSharp.Data.dll"
 
 
+open FSharp.Data
 open System
 open RDotNet
 open RProvider
@@ -10,6 +12,8 @@ open RProvider.stats
 open RProvider.rpart
 
 
+// Read data from CSV
+let nursery = CsvFile.Load("../data/nursery_data.csv")
 
 
 // Random number generator
@@ -40,4 +44,4 @@ let result = R.rpart(formula = "Y~X1+X2", data = dataset)
 
 let summary = R.summary(result)
 
-R.plot result
+//R.plot result
