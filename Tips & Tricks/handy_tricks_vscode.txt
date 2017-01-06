@@ -1,0 +1,11 @@
+# Large list of short cuts
+https://github.com/Microsoft/vscode-tips-and-tricks
+
+# Set Text Language
+Ctrl+K -> M
+
+# Multi-line select/cursor
+Shift+Alt -> Left click
+
+# Specific Multi-line select (any position)
+Alt + Left click
