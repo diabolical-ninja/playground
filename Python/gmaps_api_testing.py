@@ -5,6 +5,7 @@ Testing out the Google Maps API
 # Source Required Libraries
 import googlemaps
 from datetime import datetime
+import pandas as pd
 
 
 # Source API Key & connect
@@ -15,9 +16,98 @@ gmaps = googlemaps.Client(key=google_key)
 
 # Define an Address of interest & find its longitude & lattitude
 iselect_loc = '294 Bay Rd, Cheltenham VIC 3192'
-iselect_encode = gmaps.geocode(iselect_loc)
+iselect_encode = gmaps.geocode(iselect_loc)[0]['geometry']['location']
 
 
+
+
+def nearest_feature(address, feature, num_sm,sm_pref, con):
+    
+    # Get Address Coordinates
+    address_coords = con.geocode(address)[0]['geometry']['location']
+    
+    # Find all places within radius of POI
+    places_out = gmaps.places(query = feature
+                                , radius = 2000   # Search within 2km. Might change later
+                                , location = address_coords)
+    
+    
+    # Extract Feature Name & Coordinates
+    nearby = [[x['name'],x['geometry']['location']] for x in places_out['results']]
+    nearby_coords = [x[1] for x in nearby]
+    
+    
+    # For each place, calculate the travel time
+    transport_methods = ['driving','transit','walking']
+    
+    travel_times = []
+    for mode in transport_methods:
+        
+        # Get distance to all locations      
+        
+        dmat = gmaps.distance_matrix(origins = address_coords
+                        , destinations = nearby_coords
+                        , mode = mode
+                        , units = 'metric')
+        
+        # Extract distance & travel time
+        tmp = [[x['distance']['value'],x['duration']['value']] for x in dmat['rows'][0]['elements']]
+
+        # Join Back with Nearby Destinations & add in tranit mode
+        tmp = zip(nearby, tmp)
+        out = [x[0]+x[1]+[mode] for x in tmp]
+        
+        # Capture
+        travel_times.extend(out)
+        
+        
+    # Identify the N closest (travel time) locations
+    travel_times = pd.DataFrame(travel_times)
+    travel_times.columns = ('loc_name','coords','distance','duration','mode')
+    tmp_small = travel_times.groupby('mode')[sm_pref].nsmallest(num_sm)
+    
+    return travel_times.ix[tmp_small.index.levels[1]]
+        
+        
+        
+#        for dest in nearby:
+#            
+#            # Get Directions
+#            directions = gmaps.directions(origin = address_coords
+#                            , destination = dest[1]
+#                            , mode = mode
+#                            , units = 'metric'
+#                            #, arrival_time = 9 # This currently isn't working
+#                            )
+#            
+#            # Extract Travel Time & Distance
+#            out = [dest[0]                                          # Feature Name
+#                   , mode                                           # Transport Method
+#                   , directions[0]['legs'][0]['distance']['text']   # Distance (Km)
+#                   , directions[0]['legs'][0]['duration']['text']   # Travel Time
+#                   ]
+#            
+#            
+#            '''
+#            TO-DO:
+#            -For each transport mode, capture the N fastest (time) locations
+#            -Return some data structure containing just those locations for that mode
+#            
+#            Collect all modes & close out fn
+#            '''
+#            
+#            travel_times.append(out)
+
+
+            
+#    return travel_times
+
+
+
+times = nearest_feature(iselect_loc, 'supermarket',7,'duration',gmaps)
+
+
+def nearest_feature(address, feature, num_sm,sm_pref, con):
 
 
 # Define search parameters
@@ -94,6 +184,13 @@ places_out = gmaps.places(query = 'supermarket'
 
 # For each results, capture the name & coordinates
 nearby = [[x['name'],x['geometry']['location']] for x in places_out['results']]
+dests = [x[1] for x in nearby]
+
+
+dmat = gmaps.distance_matrix(origins = [loc_encode[0]['geometry']['location']]
+                    , destinations = dests
+                    , mode = 'transit')
+
 
 
 
@@ -113,6 +210,8 @@ for i in nearby:
      directions[0]['legs'][0]['duration']]
      
     results.append(out)
+
+
 
 
 
