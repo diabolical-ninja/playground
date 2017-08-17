@@ -62,3 +62,17 @@ registerDoSNOW(cl)
 ...
 
 stopCluster(cl)
+
+
+# Round to nearest N-mins
+N = 15 #mins
+as.POSIXct(floor(as.double(time_stamp)/(N*60))*(N*60),origin='1970-01-01')
+floor = 'Previous interval'
+round = 'closest interval'
+
+
+
+# Activate R kernel for Jupyter
+install.packages(c('repr', 'IRdisplay', 'evaluate', 'crayon', 'pbdZMQ', 'devtools', 'uuid', 'digest'))
+devtools::install_github('IRkernel/IRkernel')
+IRkernel::installspec()
