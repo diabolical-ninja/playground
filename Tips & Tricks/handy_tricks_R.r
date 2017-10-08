@@ -76,3 +76,8 @@ round = 'closest interval'
 install.packages(c('repr', 'IRdisplay', 'evaluate', 'crayon', 'pbdZMQ', 'devtools', 'uuid', 'digest'))
 devtools::install_github('IRkernel/IRkernel')
 IRkernel::installspec()
+
+
+library(RODBC)
+cnxn <- odbcDriverConnect('driver={SQL Server};server=CICDBDEV;Uid=<user name>;Pwd=<pw>')
+sqlQuery(channel = cnxn, query = "<your sql query>")
