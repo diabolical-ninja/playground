@@ -1,0 +1,23 @@
+project_name/
+    - packages/
+        -- pkg1
+        -- pkg2
+    - bau/
+        -- YYYYMMDD_vertical_desc/
+        -- YYYYMMDD_vertical_desc/
+    - modelling/
+        -- Item/
+            --- version XX.XX.XX/
+                ---- code/
+                ---- data/
+                ---- .../
+             --- version XX.XX.XX/
+        -- item/
+              --- version XX.XX.XX/
+    - deployment/
+          -- broadband/
+             --- version XX.XX.XX/
+             --- version XX.XX.XX/
+          -- energy/
+             --- version XX.XX.XX/
+             --- version XX.XX.XX/
