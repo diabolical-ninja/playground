@@ -15,3 +15,10 @@ def column_binariser(df, columns):
     dfcon = pd.concat([dfbin, dfrem], axis=1)        
     
     return dfcon
+
+	
+	
+	
+# ODBC Connection & Query
+cnxn = pyodbc.connect("DRIVER={SQL SERVER};SERVER=<server name>")
+df = pd.read_sql(con = cnxn, sql = "<SQL Query>")
